@@ -1,6 +1,5 @@
 -- ================    Indentation      ====================
-vim.opt.tabstop = 2 -- Number of visual spaces per TAB
-vim.opt.shiftwidth = 2 -- When indenting with '>', use 2 spaces width
+vim.opt.tabstop = 2 -- Number of visual spaces per TAB vim.opt.shiftwidth = 2    -- When indenting with '>', use 2 spaces width
 vim.opt.copyindent = true -- Copy previous indentation on auto indenting
 vim.opt.autoindent = true -- Enable auto indentation
 vim.opt.expandtab = true -- Tabs are spaces
@@ -37,6 +36,22 @@ vim.api.nvim_create_autocmd("TextYankPost", {
     })
   end,
 })
+
+-- Autoformat on save
+-- vim.api.nvim_create_autocmd("LspAttach", {
+--   group = vim.api.nvim_create_augroup("lsp", { clear = true }),
+--   callback = function(args)
+--     -- 2
+--     vim.api.nvim_create_autocmd("BufWritePre", {
+--       -- 3
+--       buffer = args.buf,
+--       callback = function()
+--         -- 4 + 5
+--         vim.lsp.buf.format { async = false, id = args.data.client_id }
+--       end,
+--     })
+--   end
+-- })
 
 -- ================     Searching      ====================
 vim.opt.incsearch = true -- Search as characters are entered

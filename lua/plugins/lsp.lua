@@ -4,11 +4,11 @@ return {
     "hrsh7th/nvim-cmp",
     "hrsh7th/cmp-nvim-lsp",
     "hrsh7th/cmp-buffer",
+    "hrsh7th/cmp-path",
     "williamboman/mason.nvim",
     "williamboman/mason-lspconfig.nvim",
     "onsails/lspkind.nvim",
   },
-
   config = function()
     -- Add cmp_nvim_lsp capabilities settings to lspconfig
     -- This should be executed before you configure any language server
@@ -20,7 +20,8 @@ return {
 
     cmp.setup({
       sources = {
-        { name = "nvim_lsp" },
+        { name = "nvim_lsp", group_index = 2 },
+        { name = "path", group_index = 2 },
         { name = "buffer", keyword_length = 3 },
       },
       window = {
@@ -86,7 +87,6 @@ return {
         "eslint",
         "ts_ls",
         "astro",
-        "jdtls",
       },
       handlers = {
         function(server_name)
@@ -174,9 +174,6 @@ return {
             end,
           })
         end,
-        -- jdtls = function ()
-        --   -- Disabled from Mason, only used for install
-        -- end
       },
       -- ts_ls (Typescript)
       ts_ls = function()
