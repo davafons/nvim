@@ -21,6 +21,7 @@ vim.opt.colorcolumn = "100" -- Show column limit at line 89
 vim.opt.number = true -- Number line
 vim.opt.relativenumber = true -- Hybrid number line
 vim.opt.updatetime = 300 -- Time to autosave swap file when no changes are done
+vim.opt.backup = false -- No backup files
 
 -- Don't continue comment on newline
 vim.cmd("autocmd BufEnter * set formatoptions-=cro")
