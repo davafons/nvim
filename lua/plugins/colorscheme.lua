@@ -1,15 +1,14 @@
 return {
-  "svrana/neosolarized.nvim",
+  "maxmx03/solarized.nvim",
   lazy = false,
   priority = 1000,
-  config = function()
-    require("neosolarized").setup({
-      comment_italics = true,
-      background_set = false,
-    })
-    vim.cmd.colorscheme("neosolarized")
+  ---@type solarized.config
+  opts = {},
+  config = function(_, opts)
+    vim.o.termguicolors = true
+    vim.o.background = "dark"
+
+    require("solarized").setup(opts)
+    vim.cmd.colorscheme("solarized")
   end,
-  dependencies = {
-    "tjdevries/colorbuddy.nvim",
-  },
 }

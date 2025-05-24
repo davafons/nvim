@@ -5,7 +5,7 @@ return {
 
   config = function()
     require("nvim-treesitter.configs").setup({
-      ensure_installed = { "java", "python" },
+      ensure_installed = { "java", "python", "javascript" },
 
       -- Install languages synchronously (only applied to `ensure_installed`)
       sync_install = false,
