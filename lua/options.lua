@@ -39,22 +39,6 @@ vim.api.nvim_create_autocmd("TextYankPost", {
   end,
 })
 
--- Autoformat on save
--- vim.api.nvim_create_autocmd("LspAttach", {
---   group = vim.api.nvim_create_augroup("lsp", { clear = true }),
---   callback = function(args)
---     -- 2
---     vim.api.nvim_create_autocmd("BufWritePre", {
---       -- 3
---       buffer = args.buf,
---       callback = function()
---         -- 4 + 5
---         vim.lsp.buf.format { async = false, id = args.data.client_id }
---       end,
---     })
---   end
--- })
-
 -- ================     Searching      ====================
 vim.opt.incsearch = true -- Search as characters are entered
 vim.opt.hlsearch = true -- Highlight matches
@@ -66,7 +50,7 @@ vim.opt.wildignore = { "*/__pycache__/*" } -- Paths to ignore
 vim.opt.history = 1000 -- Remember more commands and search history
 vim.opt.undolevels = 1000 -- Allow a lot of undo levels
 vim.opt.undofile = true -- Create undo files
-vim.opt.undodir = "~/.vim/undodir" -- Directory to store undo files
+vim.opt.undodir = vim.fn.expand("~/.config/nvim/undodir") -- Directory to store undo files
 
 -- ================  File extensions   ====================
 vim.cmd([[ au BufRead,BufNewFile *.egg set filetype=egg ]])
