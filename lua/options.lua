@@ -4,6 +4,7 @@ vim.opt.copyindent = true -- Copy previous indentation on auto indenting
 vim.opt.autoindent = true -- Enable auto indentation
 vim.opt.expandtab = true -- Tabs are spaces
 vim.opt.smarttab = true -- Insert tabs according to shiftwidth, not tabstop
+vim.opt.shiftwidth = 2 -- Number of spaces to use for each step of (auto)indent
 vim.opt.shiftround = true -- Use multiples of shiftwidth when indenting
 
 -- ================   General Config   ====================

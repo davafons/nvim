@@ -183,6 +183,10 @@ return {
       astro = function()
         require("astro").astro.setup({})
       end,
+      -- kotlin
+      kotlin_language_server = function()
+        require("lspconfig").kotlin_language_server.setup({})
+      end,
     })
   end,
 }
