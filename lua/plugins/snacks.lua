@@ -8,7 +8,21 @@ return {
     -- or leave it empty to use the default settings
     -- refer to the configuration section below
     dashboard = { enabled = true },
-    picker = { enabled = true },
+    picker = {
+      sources = {
+        explorer = {
+          hidden = true,
+          ignored = true,
+        },
+        files = {
+          hidden = true,
+          ignored = true,
+        },
+      },
+      enabled = true,
+      hidden = true,
+      ignored = true,
+    },
     explorer = { enabled = true },
     indent = { enabled = true },
     statuscolumn = { enabled = true },
