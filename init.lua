@@ -22,6 +22,12 @@ vim.api.nvim_create_autocmd("VimEnter", {
   end
 })
 
+-- Load file changes from outside nvim
+vim.opt.autoread = true
+vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter", "CursorHold" }, {
+  pattern = "*",
+  command = "checktime"
+})
 
 -- Personal configuration
 require("options")
