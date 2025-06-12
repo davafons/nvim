@@ -1,10 +1,10 @@
 -- ================    Indentation      ====================
-vim.opt.tabstop = 2 -- Number of visual spaces per TAB vim.opt.shiftwidth = 2    -- When indenting with '>', use 2 spaces width
+vim.opt.tabstop = 2 -- Number of visual spaces per TAB
+vim.opt.shiftwidth = 2 -- When indenting with '>', use 2 spaces width
 vim.opt.copyindent = true -- Copy previous indentation on auto indenting
 vim.opt.autoindent = true -- Enable auto indentation
 vim.opt.expandtab = true -- Tabs are spaces
 vim.opt.smarttab = true -- Insert tabs according to shiftwidth, not tabstop
-vim.opt.shiftwidth = 2 -- Number of spaces to use for each step of (auto)indent
 vim.opt.shiftround = true -- Use multiples of shiftwidth when indenting
 
 -- ================   General Config   ====================
@@ -23,13 +23,24 @@ vim.opt.number = true -- Number line
 vim.opt.relativenumber = true -- Hybrid number line
 vim.opt.updatetime = 300 -- Time to autosave swap file when no changes are done
 vim.opt.backup = false -- No backup files
+vim.opt.swapfile = false -- Disable swap files for better performance
+vim.opt.lazyredraw = true -- Don't redraw while executing macros (performance)
+
+-- Consolidated autocommands group
+local editor_group = vim.api.nvim_create_augroup("EditorEnhancements", { clear = true })
 
 -- Don't continue comment on newline
-vim.cmd("autocmd BufEnter * set formatoptions-=cro")
-vim.cmd("autocmd BufEnter * setlocal formatoptions-=cro")
+vim.api.nvim_create_autocmd("BufEnter", {
+  group = editor_group,
+  pattern = "*",
+  callback = function()
+    vim.opt_local.formatoptions:remove({ "c", "r", "o" })
+  end,
+})
 
 -- Highlight on yank
 vim.api.nvim_create_autocmd("TextYankPost", {
+  group = editor_group,
   pattern = "*",
   callback = function()
     vim.highlight.on_yank({
@@ -55,13 +66,11 @@ vim.opt.undodir = vim.fn.expand("~/.config/nvim/undodir") -- Directory to store 
 -- ================  File extensions   ====================
 vim.cmd([[ au BufRead,BufNewFile *.egg set filetype=egg ]])
 
--- Correct filetype for docker-compose files
-local function set_filetype(pattern, filetype)
-  vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
-    pattern = pattern,
-    command = "set filetype=" .. filetype,
-  })
-end
-
-set_filetype({ "docker-compose.yml" }, "yaml.docker-compose")
-set_filetype({ "docker-compose.yaml" }, "yaml.docker-compose")
+-- File type detection
+vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+  group = editor_group,
+  pattern = { "docker-compose.yml", "docker-compose.yaml" },
+  callback = function()
+    vim.bo.filetype = "yaml.docker-compose"
+  end,
+})

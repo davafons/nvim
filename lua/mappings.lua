@@ -59,17 +59,17 @@ vim.keymap.set("n", "<Leader>S", ":split<CR>", opts)
 vim.api.nvim_create_autocmd("LspAttach", {
   desc = "LSP actions",
   callback = function(event)
-    local opts = { buffer = event.buf }
+    local lspOpts = { buffer = event.buf }
 
+    vim.keymap.set("n", "K", vim.lsp.buf.hover, lspOpts)
     vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
-    vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
-    vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
-    vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
-    vim.keymap.set("n", "go", vim.lsp.buf.type_definition, opts)
-    vim.keymap.set("n", "gr", ":Telescope lsp_references<CR>", opts)
-    vim.keymap.set("n", "gs", vim.lsp.buf.signature_help, opts)
-    vim.keymap.set("n", "<F2>", vim.lsp.buf.rename, opts)
-    vim.keymap.set("n", "<F4>", vim.lsp.buf.code_action, opts)
+    vim.keymap.set("n", "gD", vim.lsp.buf.declaration, lspOpts)
+    vim.keymap.set("n", "gi", vim.lsp.buf.implementation, lspOpts)
+    vim.keymap.set("n", "go", vim.lsp.buf.type_definition, lspOpts)
+    vim.keymap.set("n", "gr", vim.lsp.buf.references, lspOpts)
+    vim.keymap.set("n", "gs", vim.lsp.buf.signature_help, lspOpts)
+    vim.keymap.set("n", "<F2>", vim.lsp.buf.rename, lspOpts)
+    vim.keymap.set("n", "<F4>", vim.lsp.buf.code_action, lspOpts)
 
     -- vim.keymap.set("n", "<leader>f", vim.lsp.buf.format)
     vim.keymap.set("n", "<leader>df", vim.diagnostic.open_float)

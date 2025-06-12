@@ -24,7 +24,9 @@ vim.api.nvim_create_autocmd("VimEnter", {
 
 -- Load file changes from outside nvim
 vim.opt.autoread = true
+local checktime_group = vim.api.nvim_create_augroup("CheckTime", { clear = true })
 vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter", "CursorHold" }, {
+  group = checktime_group,
   pattern = "*",
   command = "checktime"
 })

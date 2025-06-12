@@ -1,5 +1,6 @@
 return {
   "neovim/nvim-lspconfig",
+  event = { "BufReadPre", "BufNewFile" },
   dependencies = {
     "hrsh7th/nvim-cmp",
     "hrsh7th/cmp-nvim-lsp",
@@ -82,15 +83,19 @@ return {
         "dockerls",
         "bashls",
         "kotlin_language_server",
-        "groovyls",
         "jedi_language_server",
         "eslint",
         "ts_ls",
         "astro",
+        "stylua",
+        "svelte"
       },
       handlers = {
         function(server_name)
-          require("lspconfig")[server_name].setup({})
+          local lspconfig = require("lspconfig")
+          if lspconfig[server_name] then
+            lspconfig[server_name].setup({})
+          end
         end,
 
         -- Lua
@@ -129,11 +134,7 @@ return {
             },
           })
         end,
-        -- Docker Compose
-        docker_compose_language_service = function()
-          require("lspconfig").docker_compose_language_service.setup({})
-        end,
-        -- Dockerfile
+        -- Dockerfile with custom settings
         dockerls = function()
           require("lspconfig").dockerls.setup({
             settings = {
@@ -147,46 +148,7 @@ return {
             },
           })
         end,
-        -- Bash
-        bashls = function()
-          require("lspconfig").bashls.setup({})
-        end,
-        -- Kotlin
-        kotlin_language_server = function()
-          require("lspconfig").kotlin_language_server.setup({})
-        end,
-        -- Groovyls
-        groovyls = function()
-          require("lspconfig").groovyls.setup({})
-        end,
-        -- Jedi (Python)
-        jedi_language_server = function()
-          require("lspconfig").jedi_language_server.setup({})
-        end,
-        -- Eslint (Javascript)
-        eslint = function()
-          require("lspconfig").eslint.setup({
-            on_attach = function(_, bufnr)
-              vim.api.nvim_create_autocmd("BufWritePre", {
-                buffer = bufnr,
-                command = "EslintFixAll",
-              })
-            end,
-          })
-        end,
       },
-      -- ts_ls (Typescript)
-      ts_ls = function()
-        require("lspconfig").ts_ls.setup({})
-      end,
-      -- astro
-      astro = function()
-        require("astro").astro.setup({})
-      end,
-      -- kotlin
-      kotlin_language_server = function()
-        require("lspconfig").kotlin_language_server.setup({})
-      end,
     })
   end,
 }

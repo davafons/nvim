@@ -1,11 +1,16 @@
 return {
   "nvim-treesitter/nvim-treesitter",
-
+  event = { "BufReadPre", "BufNewFile" },
   build = ":TSUpdate",
 
   config = function()
     require("nvim-treesitter.configs").setup({
-      ensure_installed = { "java", "python", "javascript" },
+      ensure_installed = { 
+        "lua", "vim", "vimdoc", "query",
+        "java", "python", "javascript", "typescript", 
+        "html", "css", "json", "yaml", "toml",
+        "bash", "dockerfile", "astro", "kotlin"
+      },
 
       -- Install languages synchronously (only applied to `ensure_installed`)
       sync_install = false,
@@ -34,10 +39,8 @@ return {
         -- the name of the parser)
         -- list of language that will be disabled
         disable = function(_, bufnr)
-          -- neovim get size of buffer
           local file_size = vim.fn.getfsize(vim.fn.bufname(bufnr))
           local file_lines = vim.api.nvim_buf_line_count(bufnr)
-          print("file size:", file_size, "(bytes)")
           return file_size > 50000 or file_lines > 50000
         end,
 

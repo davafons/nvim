@@ -1,5 +1,6 @@
 return {
   "folke/trouble.nvim",
+  event = { "BufReadPre", "BufNewFile" },
   dependencies = { "nvim-telescope/telescope.nvim" },
 
   config = function()
@@ -11,7 +12,7 @@ return {
       modes = {
         test = {
           mode = "diagnostics",
-          auto_open = true,
+          auto_open = false,
         },
       },
     })
@@ -20,19 +21,6 @@ return {
       callback = function()
         vim.cmd([[Trouble qflist open]])
       end,
-    })
-
-    local open_with_trouble = require("trouble.sources.telescope").open
-
-    local telescope = require("telescope")
-
-    telescope.setup({
-      defaults = {
-        mappings = {
-          i = { ["<c-t>"] = open_with_trouble },
-          n = { ["<c-t>"] = open_with_trouble },
-        },
-      },
     })
 
     vim.keymap.set("n", "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>")
