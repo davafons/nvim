@@ -31,10 +31,6 @@ vim.keymap.set("n", "<A-j>", ":bprev<CR>", opts)
 vim.keymap.set("n", "<A-k>", ":bnext<CR>", opts)
 
 -- ================  Shortcuts   ====================
--- Quickly edit/reload the vimrc file
-vim.keymap.set("n", "<Leader>ye", ":e $MYVIMRC<CR>", { silent = true, noremap = true })
-vim.keymap.set("n", "<Leader>ys", ":source $MYVIMRC<CR>", { silent = true, noremap = true })
-
 -- Disable search highlight
 vim.keymap.set("n", "<Leader><space>", ":nohlsearch<CR>", { silent = true, noremap = true })
 
@@ -54,6 +50,10 @@ vim.keymap.set("x", "<leader>p", [["_dP]])
 -- Shortcuts for split window
 vim.keymap.set("n", "<Leader>s", ":vsplit<CR>", opts)
 vim.keymap.set("n", "<Leader>S", ":split<CR>", opts)
+
+-- Tree mappings
+vim.keymap.set("n", "<Leader>f", ":NvimTreeFindFile<CR>", opts)
+vim.keymap.set("n", "<Leader>v", ":NvimTreeFocus<CR>", opts)
 
 -- ================     LSP      ====================
 vim.api.nvim_create_autocmd("LspAttach", {

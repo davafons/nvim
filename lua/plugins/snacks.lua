@@ -15,14 +15,14 @@ return {
         },
         files = {
           hidden = true,
-          ignored = true,
+          ignored = false,
         },
       },
       enabled = true,
       hidden = true,
       ignored = true,
     },
-    explorer = { enabled = true },
+    explorer = { enabled = false },
     indent = { enabled = true },
     statuscolumn = { enabled = true },
     gitbrowse = { enabled = true },
@@ -38,20 +38,6 @@ return {
   },
   keys = {
     -- Top Pickers & Explorer
-    {
-      "<leader>f",
-      function()
-        Snacks.explorer()
-      end,
-      desc = "File Explorer",
-    },
-    {
-      "<leader>v",
-      function()
-        Snacks.explorer.reveal()
-      end,
-      desc = "File Explorer",
-    },
     {
       "<leader>tt",
       function()
