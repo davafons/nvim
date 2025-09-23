@@ -52,8 +52,8 @@ vim.keymap.set("n", "<Leader>s", ":vsplit<CR>", opts)
 vim.keymap.set("n", "<Leader>S", ":split<CR>", opts)
 
 -- Tree mappings
-vim.keymap.set("n", "<Leader>f", ":NvimTreeFindFile<CR>", opts)
-vim.keymap.set("n", "<Leader>v", ":NvimTreeFocus<CR>", opts)
+vim.keymap.set("n", "<Leader>f", ":NvimTreeToggle<CR>", opts)
+vim.keymap.set("n", "<Leader>v", ":NvimTreeFindFile<CR>", opts)
 
 -- ================     LSP      ====================
 vim.api.nvim_create_autocmd("LspAttach", {
