@@ -1,18 +1,4 @@
-# nvim
-Personal nvim configuration for Linux
+# 💤 LazyVim
 
-## Install
-
-```sh
-$ cd .config
-$ git clone https://github.com/davafons/nvim
-```
-
-Then, run:
-```sh
-:Lazy
-```
-
-## License
-
-[MIT](LICENSE)
+A starter template for [LazyVim](https://github.com/LazyVim/LazyVim).
+Refer to the [documentation](https://lazyvim.github.io/installation) to get started.
