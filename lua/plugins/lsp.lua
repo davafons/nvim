@@ -1,153 +1,156 @@
 return {
-  "neovim/nvim-lspconfig",
-  event = { "BufReadPre", "BufNewFile" },
-  dependencies = {
-    "hrsh7th/nvim-cmp",
-    "hrsh7th/cmp-nvim-lsp",
-    "hrsh7th/cmp-buffer",
-    "hrsh7th/cmp-path",
-    "williamboman/mason.nvim",
-    "williamboman/mason-lspconfig.nvim",
-    "onsails/lspkind.nvim",
-  },
-  config = function()
-    -- Add cmp_nvim_lsp capabilities settings to lspconfig
-    -- This should be executed before you configure any language server
-    local lspconfig_defaults = require("lspconfig").util.default_config
-    lspconfig_defaults.capabilities =
-      vim.tbl_deep_extend("force", lspconfig_defaults.capabilities, require("cmp_nvim_lsp").default_capabilities())
-
-    local cmp = require("cmp")
-
-    cmp.setup({
-      sources = {
-        { name = "nvim_lsp", group_index = 1 },
-        { name = "path", group_index = 2 },
-        { name = "buffer", group_index = 2, keyword_length = 3 },
+  {
+    "neovim/nvim-lspconfig",
+    commit = "c59fc922f718fa055f69f5f3bc888f23211571eb",
+    event = { "BufReadPre", "BufNewFile" },
+    dependencies = {
+      "Saghen/blink.cmp",
+      "b0o/SchemaStore.nvim",
+      {
+        "mason-org/mason.nvim",
+        commit = "2a6940af80375532e5e9e7c1f2fc6319a1b7a69d",
+        lazy = false,
+        opts = { install_root_dir = require("config.paths").mason },
+        config = function(_, opts)
+          require("mason").setup(opts)
+          vim.api.nvim_create_user_command("InstallTools", function()
+            vim.cmd.MasonInstall({ args = require("config.tools") })
+          end, { desc = "Install the selected formatting and linting tools" })
+        end,
       },
-      window = {
-        completion = cmp.config.window.bordered(),
-        documentation = cmp.config.window.bordered(),
-      },
-      formatting = {
-        format = require("lspkind").cmp_format({
-          menu = {
-            buffer = "[Buffer]",
-            nvim_lsp = "[LSP]",
-            luasnip = "[LuaSnip]",
-            nvim_lua = "[Lua]",
-            latex_symbols = "[Latex]",
+      { "mason-org/mason-lspconfig.nvim", commit = "e17625cdc8c2650787467398e02c5d63a2cde966" },
+    },
+    config = function()
+      local languages = require("config.languages")
+      vim.lsp.config("*", {
+        capabilities = require("blink.cmp").get_lsp_capabilities(),
+      })
+      vim.lsp.config("lua_ls", {
+        settings = {
+          Lua = {
+            runtime = { version = "LuaJIT" },
+            workspace = { checkThirdParty = false, library = { vim.env.VIMRUNTIME } },
+            diagnostics = { globals = { "vim" } },
+            telemetry = { enable = false },
           },
-          mode = "symbol_text", -- show only symbol annotations
-          maxwidth = 50, -- prevent the popup from showing more than provided characters
-          ellipsis_char = "...", -- when popup menu exceed maxwidth, the truncated part would show ellipsis_char instead
-          show_labelDetails = true,
-        }),
-      },
-      mapping = cmp.mapping.preset.insert({
-        ["<CR>"] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
-      }),
-    })
-
-    vim.diagnostic.config({
-      signs = {
-        text = {
-          [vim.diagnostic.severity.ERROR] = "✘",
-          [vim.diagnostic.severity.WARN] = "▲",
-          [vim.diagnostic.severity.HINT] = "⚑",
-          [vim.diagnostic.severity.INFO] = "»",
         },
-      },
-      float = {
-        focusable = false,
-        style = "minimal",
-        border = "rounded",
-        header = "",
-        prefix = "",
-      },
-    })
-
-    vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
-      border = "rounded",
-    })
-
-    vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, {
-      border = "rounded",
-    })
-
-    require("mason").setup()
-    require("mason-lspconfig").setup({
-      ensure_installed = {
-        "lua_ls",
-        "docker_compose_language_service",
-        "dockerls",
-        "bashls",
-        "kotlin_language_server",
-        "jedi_language_server",
-        "eslint",
-        "ts_ls",
-        "astro",
-        "svelte"
-      },
-      handlers = {
-        function(server_name)
-          local lspconfig = require("lspconfig")
-          if lspconfig[server_name] then
-            lspconfig[server_name].setup({})
+      })
+      vim.lsp.config("biome", {
+        cmd = function(dispatchers, config)
+          local local_cmd = vim.fs.joinpath(config.root_dir, "node_modules/.bin/biome")
+          local cmd = vim.fn.executable(local_cmd) == 1 and local_cmd or "biome"
+          return vim.lsp.rpc.start({ cmd, "lsp-proxy" }, dispatchers, { cwd = config.root_dir })
+        end,
+      })
+      vim.lsp.config("herb_ls", {
+        filetypes = { "eruby" },
+        workspace_required = true,
+        root_dir = function(bufnr, on_dir)
+          local root = vim.fs.root(bufnr, { ".herb.yml" })
+          if root then
+            on_dir(root)
           end
         end,
-
-        -- Lua
-        lua_ls = function()
-          require("lspconfig").lua_ls.setup({
-            on_init = function(client)
-              if client.workspace_folders then
-                local path = client.workspace_folders[1].name
-                if vim.uv.fs_stat(path .. "/.luarc.json") then
-                  return
-                end
-              end
-
-              client.config.settings.Lua = vim.tbl_deep_extend("force", client.config.settings.Lua, {
-                runtime = {
-                  -- Tell the language server which version of Lua you're using
-                  -- (most likely LuaJIT in the case of Neovim)
-                  version = "LuaJIT",
-                },
-                -- Make the server aware of Neovim runtime files
-                workspace = {
-                  checkThirdParty = false,
-                  library = {
-                    vim.env.VIMRUNTIME,
-                    -- Depending on the usage, you might want to add additional paths here.
-                    -- "${3rd}/luv/library"
-                    -- "${3rd}/busted/library",
-                  },
-                  -- or pull in all of 'runtimepath'. NOTE: this is a lot slower and will cause issues when working on your own configuration (see https://github.com/neovim/nvim-lspconfig/issues/3189)
-                  -- library = vim.api.nvim_get_runtime_file("", true)
-                },
-              })
-            end,
-            settings = {
-              Lua = {},
-            },
-          })
+        cmd = function(dispatchers, config)
+          local local_cmd = vim.fs.joinpath(config.root_dir, "node_modules/.bin/herb-language-server")
+          local cmd = vim.fn.executable(local_cmd) == 1 and local_cmd or "herb-language-server"
+          return vim.lsp.rpc.start({ cmd, "--stdio" }, dispatchers, { cwd = config.root_dir })
         end,
-        -- Dockerfile with custom settings
-        dockerls = function()
-          require("lspconfig").dockerls.setup({
-            settings = {
-              docker = {
-                languageserver = {
-                  formatter = {
-                    ignoreMultilineInstructions = true,
-                  },
+        init_options = { linter = { fixOnSave = false }, formatter = { enabled = false } },
+        settings = {
+          languageServerHerb = { linter = { fixOnSave = false }, formatter = { enabled = false } },
+        },
+      })
+      vim.lsp.config("vtsls", {
+        filetypes = { "typescript", "javascript", "typescriptreact", "javascriptreact", "vue" },
+        settings = {
+          vtsls = {
+            autoUseWorkspaceTsdk = true,
+            tsserver = {
+              globalPlugins = {
+                {
+                  name = "@vue/typescript-plugin",
+                  location = require("config.paths").mason
+                    .. "/packages/vue-language-server/node_modules/@vue/language-server",
+                  languages = { "vue" },
+                  configNamespace = "typescript",
+                  enableForWorkspaceTypeScriptVersions = true,
                 },
               },
             },
-          })
+          },
+        },
+      })
+      vim.lsp.config("jsonls", {
+        settings = { json = { schemas = require("schemastore").json.schemas(), validate = { enable = true } } },
+      })
+      vim.lsp.config("yamlls", {
+        settings = {
+          yaml = {
+            schemaStore = { enable = false, url = "" },
+            schemas = require("schemastore").yaml.schemas(),
+          },
+        },
+      })
+      -- Formatting stays explicit; ESLint still provides diagnostics/code actions.
+      vim.lsp.config("eslint", { settings = { format = false } })
+      require("mason-lspconfig").setup({
+        ensure_installed = languages.servers,
+        automatic_enable = languages.servers,
+      })
+      vim.diagnostic.config({
+        virtual_text = false,
+        underline = true,
+        severity_sort = true,
+        float = { border = "rounded", source = true },
+      })
+      vim.api.nvim_create_autocmd("LspAttach", {
+        group = vim.api.nvim_create_augroup("PersonalLspMappings", { clear = true }),
+        callback = function(ev)
+          local function map(key, fn, desc)
+            vim.keymap.set("n", key, fn, { buffer = ev.buf, desc = desc })
+          end
+          map("K", function()
+            vim.lsp.buf.hover({ border = "rounded" })
+          end, "Documentation")
+          map("gd", function()
+            require("fzf-lua").lsp_definitions()
+          end, "Go to definition")
+          map("gD", vim.lsp.buf.declaration, "Go to declaration")
+          map("gi", function()
+            require("fzf-lua").lsp_implementations()
+          end, "Go to implementation")
+          map("go", function()
+            require("fzf-lua").lsp_typedefs()
+          end, "Go to type definition")
+          map("gr", function()
+            require("fzf-lua").lsp_references()
+          end, "Find references")
+          map("gs", function()
+            vim.lsp.buf.signature_help({ border = "rounded" })
+          end, "Signature help")
+          map("<F2>", vim.lsp.buf.rename, "Rename symbol")
+          map("<F4>", vim.lsp.buf.code_action, "Code actions")
+          map("<leader>df", vim.diagnostic.open_float, "Line diagnostics")
+          map("<leader>ts", function()
+            require("fzf-lua").lsp_document_symbols()
+          end, "File symbols")
+          map("<leader>tS", function()
+            require("fzf-lua").lsp_live_workspace_symbols()
+          end, "Project symbols")
         end,
-      },
-    })
-  end,
+      })
+    end,
+  },
+  {
+    "folke/trouble.nvim",
+    commit = "bd67efe408d4816e25e8491cc5ad4088e708a69a",
+    cmd = "Trouble",
+    opts = {},
+    keys = {
+      { "<leader>xx", "<cmd>Trouble diagnostics toggle<CR>", desc = "Project diagnostics" },
+      { "<leader>xX", "<cmd>Trouble diagnostics toggle filter.buf=0<CR>", desc = "Buffer diagnostics" },
+      { "<leader>xq", "<cmd>Trouble qflist toggle<CR>", desc = "Quickfix list" },
+    },
+  },
 }
