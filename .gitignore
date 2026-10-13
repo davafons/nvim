@@ -1,7 +1,0 @@
-undodir/
-*.swp
-.DS_Store
-__pycache__/
-*.py[cod]
-*.tmp
-doc/tags
